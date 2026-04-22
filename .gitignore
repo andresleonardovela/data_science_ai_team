@@ -1,0 +1,53 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Environment variables (never commit real credentials)
+.env
+.env.local
+.env.*.local
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# ML artifacts & large data files
+mlruns/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+projects/*/data/raw/
+projects/*/data/processed/
+!projects/*/data/.gitkeep
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets (never commit)
+config/secrets.md
+*.pem
+*.key
+
+# Quota usage tracking (local state)
+.quota_usage.json

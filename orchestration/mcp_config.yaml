@@ -1,0 +1,54 @@
+# Model Context Protocol (MCP) configuration
+# Connects agents to external tools and services as universal adapters.
+# Reference: https://modelcontextprotocol.io/
+
+version: "1.0"
+
+server:
+  name: data-science-ai-team-mcp
+  description: MCP server exposing the AI team's tool set
+  transport: stdio  # Use 'http' for remote deployments
+
+tools:
+  - name: rag_tool
+    description: Retrieve relevant documents from the watsonx-backed knowledge base
+    module: tools.rag_tool
+    factory: build_rag_tool
+
+  - name: kaggle_scraper
+    description: Download datasets from Kaggle by owner/dataset-name identifier
+    module: tools.kaggle_scraper
+    factory: build_kaggle_tool
+
+  - name: guardium_scanner
+    description: Scan code and text for OWASP security vulnerabilities
+    module: tools.guardium_scanner
+    factory: build_guardium_tool
+
+  - name: fastapi_deployer
+    description: Deploy a trained ML model as a FastAPI REST endpoint
+    module: tools.fastapi_deployer
+    factory: build_deployer_tool
+
+resources:
+  - name: churn_dataset
+    description: Telecom customer churn dataset (CSV)
+    uri: file://projects/churn_prediction/data/raw/
+
+  - name: mlflow_experiments
+    description: MLflow experiment tracking store
+    uri: file://mlruns/
+
+prompts:
+  - name: architecture_template
+    description: Standard architectural plan template for new ML projects
+    template: |
+      You are a senior data architect. Analyse the following requirements and
+      produce a structured architectural document covering:
+      1. Data sources and ingestion strategy
+      2. Feature engineering pipeline
+      3. Model training and evaluation approach
+      4. Deployment architecture (API, monitoring)
+      5. Governance and observability hooks
+
+      Requirements: {{requirements}}

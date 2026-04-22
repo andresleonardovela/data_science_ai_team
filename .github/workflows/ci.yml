@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+      - name: Type check with mypy
+        run: uv run mypy src/ agents/ tools/ governance/ config/ orchestration/
+        continue-on-error: true  # Non-blocking until type coverage improves
+
+      - name: Run tests
+        run: uv run pytest tests/ projects/ --cov=. --cov-report=xml -v
+        env:
+          # Use dummy values for CI — real watsonx calls are skipped
+          WATSONX_API_KEY: "ci-dummy-key"
+          WATSONX_PROJECT_ID: "ci-dummy-project"
+          KAGGLE_USERNAME: "ci-dummy"
+          KAGGLE_KEY: "ci-dummy"
+          MLFLOW_TRACKING_URI: "./mlruns"
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+        continue-on-error: true
